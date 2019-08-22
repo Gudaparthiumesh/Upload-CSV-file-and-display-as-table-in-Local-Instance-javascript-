@@ -1,0 +1,60 @@
+({ 
+    MAX_FILE_SIZE: 4500000,
+    generateFile2Data: function(component, event,helper) {
+        let button = component.find('disablebuttonid');
+        button.set('v.disabled',true);
+        var fileInput = component.find("fuploader").get("v.files");
+        var file = fileInput[0];
+        var self = this;
+        if (file.size > self.MAX_FILE_SIZE) {
+            component.set("v.fileName1", 'Alert : File size cannot exceed ' + self.MAX_FILE_SIZE + ' bytes.\n' + ' Selected file size: ' + file.size);
+            return;
+        }
+        var textdata;
+        var reader = new FileReader();
+        
+        reader.onload = $A.getCallback(function() {
+            var text = reader.result; 
+            textdata = text;
+            var rows = textdata.split('\n'); 
+            var dataResult = [];
+            var headerResult = [];
+            var fileHeader= rows[0].split(",");
+            for(var i= 0;i< fileHeader.length;i++)
+            {
+                var headerObj= {};
+                headerObj["label"] = fileHeader[i];
+                headerObj["fieldName"] = fileHeader[i];
+                headerObj["type"] = "text";
+                headerResult.push(headerObj);
+            }
+            for(var i= 1;i< rows.length-1;i++){
+                var dataObj = {};
+                var currentline=rows[i].split(",");
+                for(var j= 0;j< currentline.length;j++)
+                {
+                    dataObj[fileHeader[j]]	= currentline[j];
+                }
+                dataResult.push(dataObj);
+                var pageSize = component.get("v.pageSize");
+                component.set("v.fullResult",dataResult); 
+                component.set("v.totalRecords",dataResult.length);
+                component.set("v.startPage", 0);                
+                component.set("v.endPage", pageSize - 1);
+            }
+            var filteredResult = [];
+            for(var i=0;i< pageSize;i++)
+            {
+                if(i < dataResult.length)
+                {
+                    filteredResult.push(dataResult[i]);
+                }
+            }
+            component.set("v.filterResult", filteredResult);
+            component.set("v.showData","true");
+            component.set("v.columnHeaders",headerResult);
+            component.set("v.showClear","true");
+        });
+        reader.readAsText(fileInput[0]);
+    },
+})

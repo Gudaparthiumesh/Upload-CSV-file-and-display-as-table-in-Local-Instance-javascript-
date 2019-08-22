@@ -1,0 +1,7 @@
+.THIS .slds-file-selector__dropzone{
+    margin-left: 10px;
+}
+.THIS.slds-spinner_container {  
+  z-index: 1000;
+  position: center;   
+}

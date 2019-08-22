@@ -1,0 +1,68 @@
+<aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,force:lightningQuickAction" access="global">
+    <aura:attribute name="fileName1" type= "String"/>
+    <aura:attribute name="showLabel" type= "boolean" default="false"/>
+    <aura:attribute name="showData" type= "boolean" default="false"/>
+    <aura:attribute name="showClear" type= "boolean" default="false"/>
+    <aura:attribute name="columnHeaders" type="Object[]"/>
+    <aura:attribute name="fullResult" type="Object[]"/>
+    <aura:attribute name="filterResult" type="Object[]"/>
+    <aura:attribute name="currentPageNumber" type="Integer" default="1"/>
+    <aura:attribute name="startPage" type="Integer" />
+    <aura:attribute name="endPage" type="Integer"/>
+    <aura:attribute name="pageSize" type="Integer" default="10"/>
+    <aura:attribute name="totalRecords" type="Integer" default="0"/> 
+    <aura:attribute name="fdataSize" type="Integer" default="0"/> 
+    
+    <div class="slds-size--12-of-12">
+        <div style="padding: 1.0%; background: rgb(64, 64, 64);border-radius:10px 10px 0px 0px;" >
+            <div class="slds-text-heading_small slds-text-color_inverse" align="center" >
+                <b>Upload CSV and display in Data Table (JS INSTANCE)</b>
+            </div>
+        </div>
+    </div>
+    <div class="slds-m-around_xx-large">
+        <lightning:input aura:id="fuploader" onchange="{!c.handleFilesChange}" type="file" name="file" multiple="false" accept=".csv"/>
+    </div>
+    <aura:if isTrue="{!v.showLabel}" >
+        <div class="slds-m-around--medium" style="padding-left:3%">
+            <h2 class="slds-text-heading_medium"><b>File Name : </b> {!v.fileName1} </h2>
+            <lightning:button label="Generate to Table" onclick="{!c.generate}" variant="success" class="slds-m-top--medium" aura:id="disablebuttonid"/>
+        </div>
+    </aura:if>
+    <aura:if isTrue="{!v.showData}" >
+        <div class="slds-clearfix slds-m-around--medium">
+            <!--<div class="slds-float_right">
+                <ui:inputSelect aura:id="pageSize" label="Display Records Per Page: " change="{!c.onSelectChange}">
+                    <ui:inputSelectOption text="10" label="10" value="true"/>
+                    <ui:inputSelectOption text="25" label="25"/>
+                    <ui:inputSelectOption text="50" label="50"/>
+                </ui:inputSelect>
+            </div>-->
+            <br/>
+            <div class="slds-scrollable_x slds-m-around--medium">
+                <lightning:datatable data="{!v.filterResult}"
+                                     columns="{!v.columnHeaders}"
+                                     keyField="Id"
+                                     hideCheckboxColumn="false"
+                                     resizeColumnDisabled= "false"
+                                     />
+            </div>
+            <div class="slds-page-header" role="banner">
+                <div class="slds-float_right">
+                    <lightning:button variant="destructive" label="Clear" onclick="{!c.handleClear}" />
+                    <lightning:button variant="brand" iconName="utility:contract_alt"  iconPosition="right" label="Reset" onclick="{!c.reset}" disabled="{!v.startPage == 0}"/>
+                    <lightning:button label="Prev" iconName="utility:chevronleft" iconPosition="left" 
+                                      onclick="{!c.handlePrev}" disabled="{!v.startPage == 0}"/>
+                    <lightning:button label="Next" iconName="utility:chevronright" iconPosition="right"
+                                      disabled="{!v.endPage + 1 >= v.totalRecords}" onclick="{!c.handleNext}"/>
+                </div>
+                <p class="slds-page-header__title">Page {!v.currentPageNumber} | Showing Records from {!(v.startPage)+' to '+ (v.endPage+1)} <b style="align:center;padding-left:20%">Total Records : {!v.totalRecords}</b> </p>
+            </div>
+        </div>
+    </aura:if>
+    <div style="padding: 2%; background: rgb(64, 64, 64);border-radius:0px 0px 10px 10px;margin-top:2%" >
+        <div class="slds-text-heading_small slds-text-color_inverse" align="center" >
+            
+        </div>
+    </div>
+</aura:component>
